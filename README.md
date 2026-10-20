@@ -2,7 +2,7 @@
 
 A swipe-based crossmodal taste test by Living Room Labs. People swipe through 16 abstract texture plates and get one of four coffee flavour profiles, with matching coffees from Hermanos Coffee Roasters. Built to promote the Living Room Labs coffee tasting in November.
 
-**Live:** https://bgolumbeanu01-cell.github.io/taste-by-sight/
+**Live:** https://coffee.joinlrl.com/
 
 ## How it works
 
