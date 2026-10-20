@@ -185,10 +185,10 @@ a { color: inherit; }
     <p class="eyebrow">A crossmodal taste test · 16 plates · about 60 seconds</p>
     <h1 class="display">Swipe to find your coffee profile.</h1>
     <button class="btn solid big" id="start" type="button">Start the test →</button>
-    <div class="intro-event" id="introEvent" hidden>
+    <div class="intro-event" id="introEvent">
       <span class="eyebrow">Coffee &amp; Claude · Sat 21 or Sun 22 Nov · London E1</span>
       <span class="body">A live tasting at Hermanos Coffee Roasters where we test whether your swipes predict your favourite cup. 15 seats.</span>
-      <a class="btn line" id="introEventLink" target="_blank" rel="noopener">Join the waitlist ↗</a>
+      <a class="btn line big" id="introEventLink" href="https://luma.com/dce8rvqs" target="_blank" rel="noopener">Join the waitlist ↗</a>
     </div>
     <p class="serif">Your eyes already have opinions about flavour.</p>
     <div class="teaser" id="teaser" hidden>
@@ -232,8 +232,7 @@ a { color: inherit; }
       <h2 class="display">Now taste it blind.</h2>
       <p class="body" style="color:inherit">Come to the tasting and find out whether your swipes predict the cup you actually like best.</p>
       <span class="eyebrow">Sat 21 or Sun 22 Nov · 10:00–13:00 · Hermanos Coffee Roasters, London E1 · 15 seats</span>
-      <a class="btn solid big" id="eventLink" target="_blank" rel="noopener" hidden>Join the waitlist →</a>
-      <span class="eyebrow" id="eventSoon">Details coming soon</span>
+      <a class="btn solid big" id="eventLink" href="https://luma.com/dce8rvqs" target="_blank" rel="noopener">Join the waitlist →</a>
     </div>
     <div class="vs" id="vs" hidden>
       <div><span class="eyebrow">Your friend</span><b id="vsFriend"></b></div>
@@ -316,7 +315,7 @@ a { color: inherit; }
 /* ============================================================
    EDIT HERE: event link, share link and coffee picks
    ============================================================ */
-const EVENT_URL = 'https://luma.com/dce8rvqs';   // the Luma waitlist. Leave empty to show "Details coming soon".
+const EVENT_URL = 'https://luma.com/dce8rvqs';   // the Luma waitlist (also set in the two waitlist links' href)
 const SHARE_URL = /^https?:/.test(location.protocol) ? location.origin + location.pathname : 'https://bgolumbeanu01-cell.github.io/taste-by-sight/';   // wherever this page is hosted; used in every share link
 
 const HERMANOS = 'https://hermanoscoffeeroasters.com/products/';
@@ -841,8 +840,7 @@ $('storyBtn').addEventListener('click', async () => {
   try { await saveStory(await getStoryFile(), 'Saved. Post it to your story.'); } finally { btn.disabled = false; }
 });
 if (EVENT_URL) {
-  $('eventLink').href = EVENT_URL; $('eventLink').hidden = false; $('eventSoon').hidden = true;
-  $('introEventLink').href = EVENT_URL; $('introEvent').hidden = false;
+  $('eventLink').href = EVENT_URL; $('introEventLink').href = EVENT_URL;
 }
 
 // intro fan: three plates that show the range (sweet, intense, bright)
