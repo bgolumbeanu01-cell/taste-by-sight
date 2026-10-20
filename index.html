@@ -60,7 +60,8 @@ a { color: inherit; }
   padding-block: 0 32px;
 }
 .rail { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-block: 18px 14px; border-bottom: 1px solid var(--rule); }
-.wordmark { font-weight: 700; font-size: 14px; letter-spacing: .22em; text-transform: uppercase; }
+.wordmark { font-weight: 700; font-size: 14px; letter-spacing: .22em; text-transform: uppercase; text-decoration: none; }
+.intro-event { align-self: flex-start; text-decoration: none; }
 .mono, .eyebrow, .btn-text { font-family: var(--mono); text-transform: uppercase; letter-spacing: .14em; font-size: 11.5px; }
 .eyebrow { color: var(--mute); }
 .btn-text { background: none; border: 0; padding: 6px 0; cursor: pointer; border-bottom: 1px solid currentColor; }
@@ -173,7 +174,7 @@ a { color: inherit; }
 
 <div class="app" id="app">
   <header class="rail">
-    <span class="wordmark">Living Room Labs</span>
+    <a class="wordmark" href="https://joinlrl.com/" target="_blank" rel="noopener">Living Room Labs</a>
     <button class="btn-text" id="openScience" type="button">The science</button>
   </header>
 
@@ -194,6 +195,7 @@ a { color: inherit; }
       <div><span class="arrow">←</span><b>Swipe left</b><span class="eyebrow">if you don't like it</span></div>
       <div class="r"><span class="arrow">→</span><b>Swipe right</b><span class="eyebrow">if you like it</span></div>
     </div>
+    <a class="btn-text intro-event" id="introEvent" target="_blank" rel="noopener" hidden>Coffee tasting · 21 or 22 Nov · Join the waitlist ↗</a>
   </section>
 
   <!-- SWIPE -->
@@ -261,10 +263,11 @@ a { color: inherit; }
     </div>
 
     <div class="event">
-      <span class="eyebrow">Living Room Labs · Coffee tasting · November</span>
+      <span class="eyebrow">Living Room Labs · Coffee &amp; Claude</span>
       <h2 class="display">Now taste it blind.</h2>
       <p class="body" style="color:inherit">Come to the tasting and find out whether your swipes predict the cup you actually like best.</p>
-      <a class="btn solid" id="eventLink" target="_blank" rel="noopener" hidden>Get a seat</a>
+      <span class="eyebrow">Sat 21 or Sun 22 Nov · 10:00–13:00 · Hermanos Coffee Roasters, London E1 · 15 seats</span>
+      <a class="btn solid big" id="eventLink" target="_blank" rel="noopener" hidden>Join the waitlist →</a>
       <span class="eyebrow" id="eventSoon">Details coming soon</span>
     </div>
 
@@ -277,7 +280,7 @@ a { color: inherit; }
 <div class="sheet" id="science" hidden role="dialog" aria-modal="true" aria-labelledby="sciTitle">
   <div class="app">
     <header class="rail">
-      <span class="wordmark">Living Room Labs</span>
+      <a class="wordmark" href="https://joinlrl.com/" target="_blank" rel="noopener">Living Room Labs</a>
       <button class="btn-text" id="closeScience" type="button">Close</button>
     </header>
     <section class="screen">
@@ -306,7 +309,7 @@ a { color: inherit; }
 /* ============================================================
    EDIT HERE: event link, share link and coffee picks
    ============================================================ */
-const EVENT_URL = '';   // e.g. your Luma page. Leave empty to show "Details coming soon".
+const EVENT_URL = 'https://luma.com/dce8rvqs';   // the Luma waitlist. Leave empty to show "Details coming soon".
 const SHARE_URL = /^https?:/.test(location.protocol) ? location.origin + location.pathname : 'https://bgolumbeanu01-cell.github.io/taste-by-sight/';   // wherever this page is hosted; used in every share link
 
 const HERMANOS = 'https://hermanoscoffeeroasters.com/products/';
@@ -807,7 +810,10 @@ $('storyBtn').addEventListener('click', async () => {
     catch (e) { msg.textContent = e && e.code === 'rate_limited' ? 'One moment, then try again.' : hold; }
   } finally { btn.disabled = false; }
 });
-if (EVENT_URL) { $('eventLink').href = EVENT_URL; $('eventLink').hidden = false; $('eventSoon').hidden = true; }
+if (EVENT_URL) {
+  $('eventLink').href = EVENT_URL; $('eventLink').hidden = false; $('eventSoon').hidden = true;
+  $('introEvent').href = EVENT_URL; $('introEvent').hidden = false;
+}
 
 // intro fan: three plates that show the range (sweet, intense, bright)
 [0, 9, 1].forEach(i => $('fan').appendChild(thumb(PLATES[i], 276)));
