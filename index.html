@@ -1,0 +1,843 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Taste by Sight</title>
+<meta name="description" content="Swipe through 16 textures and find your coffee profile. A crossmodal taste test by Living Room Labs, based on Oxford research into how colour, shape and texture change taste.">
+<meta name="theme-color" content="#F7F8F3">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://bgolumbeanu01-cell.github.io/taste-by-sight/">
+<meta property="og:title" content="Swipe to find your coffee profile">
+<meta property="og:description" content="16 textures, 60 seconds. A crossmodal taste test by Living Room Labs.">
+<meta property="og:image" content="https://bgolumbeanu01-cell.github.io/taste-by-sight/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%232B2A26'/%3E%3Cpath d='M10 9v14M14 9v14M18 9v14M22 9v14M7 20 25 12' stroke='%23F7F8F3' stroke-width='2.2' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@1&display=swap">
+<style>
+/* reset */
+*, *::before, *::after { box-sizing: border-box; }
+:root { color-scheme: light; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+body { margin: 0; }
+img { max-width: 100%; }
+[hidden] { display: none !important; }
+
+/* Layout: one narrow column, paper ground, ink type; the plates are the only colour on the page. */
+:root {
+  --paper: #F7F8F3;
+  --ink: #2B2A26;
+  --mute: #8A8880;
+  --rule: rgba(43, 42, 38, .16);
+  --lift: rgba(43, 42, 38, .16);
+  --display: 'Outfit', ui-rounded, system-ui, sans-serif;
+  --mono: 'Geist Mono', ui-monospace, Menlo, Consolas, monospace;
+  --serif: 'Instrument Serif', Georgia, 'Times New Roman', serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --paper: #2B2A26; --ink: #F7F8F3; --mute: #9C9A93; --rule: rgba(247, 248, 243, .18); --lift: rgba(0, 0, 0, .45); color-scheme: dark; }
+}
+:root[data-theme="dark"] { --paper: #2B2A26; --ink: #F7F8F3; --mute: #9C9A93; --rule: rgba(247, 248, 243, .18); --lift: rgba(0, 0, 0, .45); color-scheme: dark; }
+
+html, body { height: 100%; }
+body { background: var(--paper); color: var(--ink); font-family: var(--display); font-size: 16px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+body::after {
+  content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 100; opacity: .055;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+button { font: inherit; color: inherit; }
+a { color: inherit; }
+:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+
+.app {
+  max-width: 560px; margin: 0 auto; min-height: 100%;
+  display: flex; flex-direction: column;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0 32px;
+}
+.rail { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-block: 18px 14px; border-bottom: 1px solid var(--rule); }
+.wordmark { font-weight: 700; font-size: 14px; letter-spacing: .22em; text-transform: uppercase; }
+.mono, .eyebrow, .btn-text { font-family: var(--mono); text-transform: uppercase; letter-spacing: .14em; font-size: 11.5px; }
+.eyebrow { color: var(--mute); }
+.btn-text { background: none; border: 0; padding: 6px 0; cursor: pointer; border-bottom: 1px solid currentColor; }
+
+.screen { display: flex; flex-direction: column; gap: 22px; padding-block: 28px 0; }
+.display { font-weight: 700; text-transform: uppercase; letter-spacing: -.03em; line-height: .94; font-size: clamp(40px, 11.5vw, 64px); margin: 0; text-wrap: balance; }
+.serif { font-family: var(--serif); font-style: italic; font-size: 24px; line-height: 1.2; margin: 0; }
+.body { font-size: 15.5px; color: var(--ink); margin: 0; max-width: 62ch; }
+.body.mute { color: var(--mute); }
+.hair { border: 0; border-top: 1px solid var(--rule); margin: 0; width: 100%; }
+
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 52px; padding: 0 22px; border-radius: 999px; cursor: pointer; font-family: var(--mono); text-transform: uppercase; letter-spacing: .14em; font-size: 12.5px; text-decoration: none; transition: transform .15s ease; }
+.btn:active { transform: scale(.97); }
+.btn.solid { background: var(--ink); color: var(--paper); border: 1px solid var(--ink); }
+.btn.line { background: transparent; color: var(--ink); border: 1px solid var(--ink); }
+.btn.big { min-height: 60px; font-family: var(--display); font-weight: 700; font-size: 19px; text-transform: none; letter-spacing: .01em; }
+.row { display: flex; gap: 10px; flex-wrap: wrap; }
+.row > .btn { flex: 1 1 160px; }
+
+/* intro */
+.fan { position: relative; height: 230px; margin-block: 6px; }
+.fan canvas { position: absolute; top: 10px; left: 50%; width: 138px; height: 184px; border-radius: 10px; box-shadow: 0 12px 30px var(--lift); }
+.fan canvas:nth-child(1) { transform: translateX(-130%) rotate(-9deg); }
+.fan canvas:nth-child(2) { transform: translateX(-50%) translateY(-6px); z-index: 2; }
+.fan canvas:nth-child(3) { transform: translateX(30%) rotate(9deg); }
+.howto { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.howto > div { border: 1px solid var(--ink); border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.howto .r { background: var(--ink); color: var(--paper); text-align: right; }
+.howto .r .eyebrow { color: inherit; opacity: .7; }
+.howto .arrow { font-size: 30px; line-height: 1; font-weight: 700; }
+.howto b { font-size: 20px; text-transform: uppercase; letter-spacing: -.01em; line-height: 1.1; }
+.legend { display: flex; justify-content: space-between; gap: 12px; width: min(100%, 400px); margin: 0 auto; font-weight: 700; font-size: 15px; text-transform: uppercase; letter-spacing: .02em; }
+@keyframes nudge { 0%, 100% { transform: none; } 25% { transform: translateX(-46px) rotate(-4deg); } 55% { transform: translateX(46px) rotate(4deg); } 80% { transform: none; } }
+@keyframes showNo { 0%, 12% { opacity: 0; } 22%, 34% { opacity: 1; } 44%, 100% { opacity: 0; } }
+@keyframes showYes { 0%, 45% { opacity: 0; } 55%, 67% { opacity: 1; } 78%, 100% { opacity: 0; } }
+.card.hint { animation: nudge 1.8s ease-in-out .5s 2; }
+.card.hint .no { animation: showNo 1.8s ease-in-out .5s 2; }
+.card.hint .yes { animation: showYes 1.8s ease-in-out .5s 2; }
+.teaser { border: 1px solid var(--ink); border-radius: 10px; padding: 12px 14px; display: flex; flex-direction: column; gap: 2px; }
+.teaser b { font-weight: 700; font-size: 20px; text-transform: uppercase; letter-spacing: -.01em; }
+
+/* swipe */
+#swipe { gap: 16px; padding-top: 18px; }
+.progress { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.progress svg { height: 26px; width: auto; max-width: 70%; color: var(--ink); }
+.stack { position: relative; width: min(100%, 400px, calc((100vh - 270px) * .75)); width: min(100%, 400px, calc((100dvh - 270px) * .75)); aspect-ratio: 3 / 4; max-width: 100%; margin: 6px auto 0; touch-action: none; user-select: none; -webkit-user-select: none; }
+.card { position: absolute; inset: 0; border-radius: 14px; overflow: hidden; box-shadow: 0 14px 34px var(--lift); transition: transform .3s cubic-bezier(.2, .8, .2, 1); will-change: transform; cursor: grab; background: var(--mute); }
+.card:active { cursor: grabbing; }
+.card canvas { width: 100%; height: 100%; display: block; pointer-events: none; }
+.stamp { position: absolute; top: 22px; padding: 6px 12px; border: 2px solid #F7F8F3; border-radius: 6px; color: #F7F8F3; background: rgba(43, 42, 38, .55); font-family: var(--mono); font-size: 15px; letter-spacing: .18em; opacity: 0; pointer-events: none; }
+.stamp.yes { left: 18px; transform: rotate(-10deg); }
+.stamp.no { right: 18px; transform: rotate(10deg); }
+.controls { display: grid; grid-template-columns: 1fr 1.4fr; gap: 10px; width: min(100%, 400px); margin: 4px auto 0; }
+.keys { text-align: center; }
+@media (hover: none) { .keys { display: none; } }
+
+/* result */
+.meta-row { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.figure { display: flex; flex-direction: column; gap: 10px; }
+.figure svg { width: 100%; height: auto; color: var(--ink); overflow: visible; }
+.figure text { font-family: var(--mono); font-size: 11px; letter-spacing: .14em; fill: var(--ink); }
+.why { display: flex; flex-direction: column; gap: 14px; }
+.why p { margin: 0; font-size: 15.5px; }
+.why cite { font-style: normal; font-family: var(--mono); font-size: 11px; letter-spacing: .08em; color: var(--mute); white-space: nowrap; }
+.plates { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+.plate { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.plate canvas { width: 100%; aspect-ratio: 3 / 4; height: auto; border-radius: 6px; display: block; }
+.plate span { font-family: var(--mono); font-size: 9.5px; letter-spacing: .08em; color: var(--mute); line-height: 1.35; text-transform: uppercase; }
+.coffees { display: flex; flex-direction: column; }
+.coffee { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 16px; padding-block: 16px; border-bottom: 1px solid var(--rule); align-items: baseline; }
+.coffee:first-child { border-top: 1px solid var(--rule); }
+.coffee h3 { margin: 0; font-size: 22px; font-weight: 700; letter-spacing: -.01em; }
+.coffee .notes { grid-column: 1 / -1; font-family: var(--serif); font-style: italic; font-size: 19px; line-height: 1.25; }
+.coffee a { font-family: var(--mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; white-space: nowrap; }
+.event { background: var(--ink); color: var(--paper); border-radius: 16px; padding: 26px 22px; display: flex; flex-direction: column; gap: 14px; position: relative; overflow: hidden; }
+.event .eyebrow { color: color-mix(in srgb, var(--paper) 62%, var(--ink)); }
+.event .display { font-size: clamp(34px, 9vw, 50px); }
+.event .btn.solid { background: var(--paper); color: var(--ink); border-color: var(--paper); align-self: flex-start; }
+.copied { min-height: 1.5em; color: var(--mute); }
+.vs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.vs > div { border: 1px solid var(--rule); border-radius: 12px; padding: 12px 14px; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.vs > div.me { border-color: var(--ink); }
+.vs b { font-size: 18px; text-transform: uppercase; line-height: 1.1; }
+.vs .serif { grid-column: 1 / -1; font-size: 21px; }
+.share { display: flex; flex-direction: column; gap: 14px; border: 1px solid var(--ink); border-radius: 16px; padding: 22px 18px; }
+.display.mid { font-size: clamp(30px, 8vw, 44px); }
+.socials { display: grid; grid-template-columns: repeat(auto-fit, minmax(96px, 1fr)); gap: 8px; }
+.socials a { display: flex; align-items: center; justify-content: center; min-height: 46px; border: 1px solid var(--rule); border-radius: 10px; font-family: var(--mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; text-decoration: none; }
+.socials a:hover { border-color: var(--ink); }
+.story { width: min(100%, 260px); height: auto; border-radius: 12px; box-shadow: 0 14px 34px var(--lift); align-self: center; }
+.sharebox { width: 100%; min-height: 84px; font-family: var(--mono); font-size: 12px; padding: 10px; border: 1px solid var(--rule); border-radius: 8px; background: transparent; color: var(--ink); resize: vertical; }
+
+/* science sheet */
+.sheet { position: fixed; inset: 0; z-index: 50; background: var(--paper); overflow-y: auto; -webkit-overflow-scrolling: touch; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+.sheet .app { padding-block: 0 48px; }
+.evidence { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.evidence li { display: grid; grid-template-columns: 2.4em minmax(0, 1fr); gap: 4px 10px; padding-block: 16px; border-bottom: 1px solid var(--rule); }
+.evidence li > .mono { color: var(--mute); padding-top: 3px; }
+.evidence h3 { margin: 0; font-size: 17px; font-weight: 700; }
+.evidence p { margin: 4px 0 0; font-size: 15px; }
+.evidence a { font-family: var(--mono); font-size: 11px; letter-spacing: .08em; color: var(--mute); }
+
+@media (prefers-reduced-motion: reduce) {
+  .card, .btn { transition: none !important; }
+  .card.hint, .card.hint .stamp { animation: none !important; }
+}
+</style>
+</head>
+<body>
+
+<div class="app" id="app">
+  <header class="rail">
+    <span class="wordmark">Living Room Labs</span>
+    <button class="btn-text" id="openScience" type="button">The science</button>
+  </header>
+
+  <!-- INTRO -->
+  <section class="screen" id="intro">
+    <p class="eyebrow">A crossmodal taste test · 16 plates · about 60 seconds</p>
+    <h1 class="display">Swipe to find your coffee profile.</h1>
+    <button class="btn solid big" id="start" type="button">Start the test →</button>
+    <p class="serif">Your eyes already have opinions about flavour.</p>
+    <div class="teaser" id="teaser" hidden>
+      <span class="eyebrow">A friend got</span>
+      <b id="teaserName"></b>
+      <span class="body mute">What does your eye pick?</span>
+    </div>
+    <div class="fan" id="fan" aria-hidden="true"></div>
+    <p class="body">Oxford researchers have shown that colour, shape and texture change how sweet, sour or bitter the same coffee tastes. Swipe right on the plates you like and left on the ones you don't. We'll read a flavour profile from your choices and point you to coffees that fit it.</p>
+    <div class="howto">
+      <div><span class="arrow">←</span><b>Swipe left</b><span class="eyebrow">if you don't like it</span></div>
+      <div class="r"><span class="arrow">→</span><b>Swipe right</b><span class="eyebrow">if you like it</span></div>
+    </div>
+  </section>
+
+  <!-- SWIPE -->
+  <section class="screen" id="swipe" hidden>
+    <div class="progress">
+      <svg id="ticks" aria-hidden="true"></svg>
+      <span class="mono" id="counter">Plate 01 / 16</span>
+    </div>
+    <div class="legend" aria-hidden="true"><span>← Don't like</span><span>Like →</span></div>
+    <div class="stack" id="stack" aria-label="Texture plate. Swipe right if you like it, left if you don't."></div>
+    <div class="controls">
+      <button class="btn line" id="noBtn" type="button">← Don't like</button>
+      <button class="btn solid" id="yesBtn" type="button">Like →</button>
+    </div>
+    <p class="mono eyebrow keys">Or use the ← → keys</p>
+  </section>
+
+  <!-- RESULT -->
+  <section class="screen" id="result" hidden>
+    <div class="meta-row">
+      <span class="eyebrow">Your flavour profile</span>
+      <span class="eyebrow" id="matchPct"></span>
+    </div>
+    <h1 class="display" id="profName"></h1>
+    <p class="serif" id="profTag"></p>
+    <p class="body" id="profDesc"></p>
+    <div class="vs" id="vs" hidden>
+      <div><span class="eyebrow">Your friend</span><b id="vsFriend"></b></div>
+      <div class="me"><span class="eyebrow">You</span><b id="vsYou"></b></div>
+      <p class="serif" id="vsLine"></p>
+    </div>
+    <button class="btn line" id="jumpShare" type="button">Share my profile ↓</button>
+
+    <hr class="hair">
+    <div class="figure">
+      <div class="meta-row"><span class="eyebrow">Fig. 01 · Your swipes, by taste dimension</span><span class="eyebrow" id="nCount"></span></div>
+      <svg id="fingerprint" role="img" aria-label="Your score on five taste dimensions, drawn as tally marks"></svg>
+    </div>
+
+    <hr class="hair">
+    <span class="eyebrow">Why your eyes picked this</span>
+    <div class="why" id="why"></div>
+
+    <div class="figure" id="platesWrap">
+      <span class="eyebrow">The plates you said yes to</span>
+      <div class="plates" id="plates"></div>
+    </div>
+
+    <hr class="hair">
+    <span class="eyebrow">Coffees to try · from Hermanos Coffee Roasters</span>
+    <div class="coffees" id="coffees"></div>
+
+    <div class="share" id="share">
+      <span class="eyebrow">Pass it on</span>
+      <h2 class="display mid">Which coffee are your friends?</h2>
+      <button class="btn solid big" id="challengeBtn" type="button">Challenge a friend →</button>
+      <div class="socials" id="socials"></div>
+      <div class="row">
+        <button class="btn line" id="storyBtn" type="button">Save story image</button>
+        <button class="btn line" id="copyBtn" type="button">Copy link</button>
+      </div>
+      <p class="mono copied" id="copied" aria-live="polite"></p>
+      <textarea class="sharebox" id="sharebox" readonly hidden aria-label="Text to share"></textarea>
+      <img class="story" id="storyImg" alt="Your coffee profile as a story image" hidden>
+    </div>
+
+    <div class="event">
+      <span class="eyebrow">Living Room Labs · Coffee tasting · November</span>
+      <h2 class="display">Now taste it blind.</h2>
+      <p class="body" style="color:inherit">Come to the tasting and find out whether your swipes predict the cup you actually like best.</p>
+      <a class="btn solid" id="eventLink" target="_blank" rel="noopener" hidden>Get a seat</a>
+      <span class="eyebrow" id="eventSoon">Details coming soon</span>
+    </div>
+
+    <button class="btn line" id="again" type="button">Take it again</button>
+    <p class="body mute" style="font-size:13.5px">This is a nudge, not a diagnosis. Crossmodal cues shift what you expect and notice in a cup. They don't decide what you like.</p>
+  </section>
+</div>
+
+<!-- SCIENCE SHEET -->
+<div class="sheet" id="science" hidden role="dialog" aria-modal="true" aria-labelledby="sciTitle">
+  <div class="app">
+    <header class="rail">
+      <span class="wordmark">Living Room Labs</span>
+      <button class="btn-text" id="closeScience" type="button">Close</button>
+    </header>
+    <section class="screen">
+      <p class="eyebrow">The science behind the plates</p>
+      <h1 class="display" id="sciTitle">You taste with your eyes.</h1>
+      <p class="body">People link colours, shapes and textures to tastes and smells in consistent ways. Researchers call these crossmodal correspondences. Every plate in this test is built from cues that have held up in published studies, several of them run on specialty coffee.</p>
+      <ol class="evidence">
+        <li><span class="mono">01</span><div><h3>Colour → taste</h3><p>452 people in China, India, Malaysia and the USA matched pink to sweet, green to sour, black to bitter and white to salty. Pink–sweet and black–bitter held in every country.</p><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC4259000/" target="_blank" rel="noopener">Wan et al., 2014 ↗</a></div></li>
+        <li><span class="mono">02</span><div><h3>Shape → taste</h3><p>Rounded shapes like clouds read as sweet. Angular shapes, crosses and squares read as bitter or sour.</p><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC4259000/" target="_blank" rel="noopener">Wan et al., 2014 ↗</a></div></li>
+        <li><span class="mono">03</span><div><h3>Shape → smell</h3><p>Lemon and pepper smells were matched to angular shapes, raspberry and vanilla to round ones. More intense smells pulled toward angular forms.</p><a href="https://www.psy.ox.ac.uk/publications/358282" target="_blank" rel="noopener">Hanson-Vaux, Crisinel &amp; Spence, 2013 ↗</a></div></li>
+        <li><span class="mono">04</span><div><h3>Cup colour → coffee</h3><p>Across 457 people, the colour of the cup changed how sweet and acidic a Brazilian and a Kenyan specialty coffee were expected and judged to be. When cup colour and coffee clashed, people liked the coffee less.</p><a href="https://ora.ox.ac.uk/objects/uuid:3b6dddde-60a2-4890-88f7-1e96df45f776" target="_blank" rel="noopener">Carvalho &amp; Spence, 2019 ↗</a></div></li>
+        <li><span class="mono">05</span><div><h3>Cup texture → coffee</h3><p>The same coffee tasted sweeter from a smooth cup, and more acidic with a drier aftertaste from a rough one. Certified Q-graders were fooled as well as amateurs.</p><a href="https://brcris.ibict.br/vivo/display/publ_51364546-e6b3-4337-b27c-d43409438ac6" target="_blank" rel="noopener">Carvalho, Moksunova &amp; Spence, 2020 ↗</a></div></li>
+        <li><span class="mono">06</span><div><h3>Mug colour → intensity</h3><p>A latte drunk from a white mug was rated more intense and less sweet than the same latte from a clear or blue one.</p><a href="https://flavourjournal.biomedcentral.com/track/pdf/10.1186/2044-7248-3-10" target="_blank" rel="noopener">Van Doorn, Wuillemin &amp; Spence, 2014 ↗</a></div></li>
+        <li><span class="mono">07</span><div><h3>Lightness → intensity</h3><p>People pick lighter colours for weaker smells and deeper, more saturated colours for stronger ones.</p><a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7593372/" target="_blank" rel="noopener">Kemp &amp; Gilbert, 1997, in Spence, 2020 ↗</a></div></li>
+        <li><span class="mono">08</span><div><h3>Texture on its own is weak</h3><p>Pictures of textures alone produce only moderate links, such as fluffy with sweet. That is why every plate here stacks colour, shape and texture.</p><a href="https://pure.au.dk/portal/en/publications/the-taste-of-visual-textures/" target="_blank" rel="noopener">Barbosa Escobar et al., 2022 ↗</a></div></li>
+      </ol>
+      <hr class="hair">
+      <p class="eyebrow">How your result is calculated</p>
+      <p class="body">Each of the 16 plates carries a score on five dimensions (sweet, bright, floral, intense and cocoa/body) based on its colour, shape and texture cues. A right swipe adds the plate's scores, and a left swipe takes away half. Plates appear in a different random order for everyone to avoid order effects. Totals are normalised per dimension, and you get the nearest of four flavour profiles by cosine similarity.</p>
+      <p class="body mute">One caution: people also match things they simply like to round shapes, so part of every result is just liking (<a href="https://www.neuroscience.ox.ac.uk/publications/504630" target="_blank" rel="noopener">Velasco et al.</a>). The research shows that images change expectation and perception, but it hasn't shown that they predict preference. We'll test that in November, blind.</p>
+    </section>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   EDIT HERE: event link, share link and coffee picks
+   ============================================================ */
+const EVENT_URL = '';   // e.g. your Luma page. Leave empty to show "Details coming soon".
+const SHARE_URL = /^https?:/.test(location.protocol) ? location.origin + location.pathname : 'https://bgolumbeanu01-cell.github.io/taste-by-sight/';   // wherever this page is hosted; used in every share link
+
+const HERMANOS = 'https://hermanoscoffeeroasters.com/products/';
+const COFFEES = {
+  floral:   [{ name: "Domingo's Gesha", handle: 'domingos-gesha', notes: 'Jasmine, lemon, vanilla, honey', meta: 'Gesha · washed' },
+             { name: 'Doña Delfina', handle: 'dona-delfina', notes: 'Lavender, rose petals, Earl Grey, honey', meta: '' }],
+  bright:   [{ name: 'Luz Marina', handle: 'luz-marina', notes: 'Eucalyptus, guava, dried apricot, tangerine', meta: 'Co-fermented' },
+             { name: 'Piamonte', handle: 'piamonte', notes: 'Orange blossom honey, elderflower, lychee, star fruit', meta: 'Caturra · honey process' }],
+  tropical: [{ name: 'Las Flores', handle: 'las-flores', notes: 'Mango, passionfruit, pomegranate, cherry, cinnamon', meta: 'Bourbon Cidra · natural' },
+             { name: 'Don Jhon', handle: 'don-jhon', notes: 'Blackcurrant, strawberry candy, watermelon, cherry cola', meta: 'Caturra Chiroso · co-fermented' }],
+  cocoa:    [{ name: 'La Paz', handle: 'la-paz', notes: 'Cacao, caramel, roasted almond, fig', meta: 'San Bernardo · washed' },
+             { name: 'El Fresno', handle: 'el-fresno', notes: 'Dark chocolate, pistachio, orange marmalade, salted caramel', meta: '' }]
+};
+/* ============================================================ */
+
+const DIMS = ['Sweet', 'Bright', 'Floral', 'Intense', 'Cocoa / body'];
+
+const PROFILES = {
+  floral:   { name: 'Floral & tea-like', tag: 'Delicate, perfumed, clean.', v: [.5, .4, 1, .1, 0],
+              desc: "You're drawn to light, smooth, airy plates. In a cup that usually means jasmine, rose and bergamot over a light, tea-like body. Washed Geshas are your territory." },
+  bright:   { name: 'Bright & zesty', tag: 'Crisp, juicy, wide awake.', v: [.2, 1, .4, .3, 0],
+              desc: 'You keep choosing sharp edges and sunlit greens and yellows. Expect citrus, stone fruit and a sparkle of acidity: the coffees that make your mouth water.' },
+  tropical: { name: 'Tropical & wild', tag: 'Loud, ripe, a little bit boozy.', v: [.7, .4, .2, 1, .3],
+              desc: 'You go for saturated colour and explosive forms. That points to natural and co-fermented coffees: mango, passionfruit, dark berries, sometimes a hint of rum.' },
+  cocoa:    { name: 'Cocoa & caramel', tag: 'Round, rich, comforting.', v: [.8, 0, 0, .1, 1],
+              desc: 'You like dense, warm, soft-edged plates. In coffee that reads as caramel, chocolate and roasted nuts, with a fuller body and gentle acidity.' }
+};
+
+const WHY = [
+  'You leaned toward round, soft, pink-to-amber plates. Pink and rounded shapes are the most consistent cross-cultural cue for sweetness <cite>Wan et al., 2014</cite>, and the same coffee tastes sweeter from a smooth cup <cite>Carvalho et al., 2020</cite>.',
+  'You picked sharp, angular, yellow-green plates. Green reads as sour across cultures <cite>Wan et al., 2014</cite>, lemon smells get matched to angular shapes <cite>Hanson-Vaux et al., 2013</cite>, and yellow and green cups raise expected acidity in coffee <cite>Carvalho &amp; Spence, 2019</cite>.',
+  'You liked pale, smooth, airy plates. Lighter colours go with gentler, more delicate aromas <cite>Kemp &amp; Gilbert, 1997</cite>, and smooth surfaces pull coffee toward sweet and clean rather than dry <cite>Carvalho et al., 2020</cite>.',
+  'You went for saturated, high-contrast, explosive plates. Intense smells get matched to sharper forms <cite>Hanson-Vaux et al., 2013</cite> and to deeper, stronger colours <cite>Kemp &amp; Gilbert, 1997</cite>.',
+  'You chose dark, dense, earthy plates. Black and deep brown are the most reliable visual cue for bitterness and roast <cite>Wan et al., 2014</cite>, and rough textures make coffee taste drier and fuller <cite>Carvalho et al., 2020</cite>.'
+];
+
+/* ---------- plate renderer: seeded, procedural, 600×800 ---------- */
+const W = 600, H = 800, TAU = Math.PI * 2;
+const rng = seed => { let s = seed >>> 0; return () => (s = (Math.imul(s, 1664525) + 1013904223) >>> 0) / 4294967296; };
+const rgba = (h, a) => { const n = parseInt(h.slice(1), 16); return `rgba(${n >> 16 & 255},${n >> 8 & 255},${n & 255},${a})`; };
+const pick = (r, a) => a[Math.floor(r() * a.length)];
+function soft(c, x, y, R, h, a) { const g = c.createRadialGradient(x, y, 0, x, y, R); g.addColorStop(0, rgba(h, a)); g.addColorStop(1, rgba(h, 0)); c.fillStyle = g; c.fillRect(x - R, y - R, R * 2, R * 2); }
+function grad(c, c0, c1, diag) { const g = diag ? c.createLinearGradient(0, 0, W, H) : c.createLinearGradient(0, 0, 0, H); g.addColorStop(0, c0); g.addColorStop(1, c1); c.fillStyle = g; c.fillRect(0, 0, W, H); }
+function grain(c, amt, r) { const d = c.getImageData(0, 0, W, H), p = d.data; for (let i = 0; i < p.length; i += 4) { const n = (r() - .5) * amt; p[i] += n; p[i + 1] += n; p[i + 2] += n; } c.putImageData(d, 0, 0); }
+function flow(c, r, x, y, steps, len, s1, s2, f1, f2) { c.beginPath(); c.moveTo(x, y); for (let t = 0; t < steps; t++) { const a = Math.sin(x * f1 + s1) * 2 + Math.cos(y * f2 + s2) * 2; x += Math.cos(a) * len; y += Math.sin(a) * len; c.lineTo(x, y); } }
+
+const TEX = {
+  cloud(c, r) {
+    grad(c, '#f9d2de', '#f0a6bf');
+    for (let k = 0; k < 11; k++) { const cx = r() * W, cy = r() * H;
+      for (let j = 0; j < 9; j++) { const x = cx + (r() - .5) * 240, y = cy + (r() - .5) * 130, R = 60 + r() * 110;
+        soft(c, x, y + R * .35, R, '#e48aa9', .22); soft(c, x, y, R, r() < .6 ? '#ffffff' : '#fde6ee', .4); } }
+    grain(c, 7, r);
+  },
+  shards(c, r) {
+    grad(c, '#eef36a', '#93c43a', true);
+    const pal = ['#f4f79a', '#d9ec4c', '#b7dc3e', '#8fbf2a', '#6fa21f', '#fbfde0'];
+    for (let i = 0; i < 85; i++) { const cx = r() * W, cy = r() * H, a = r() * TAU, len = 90 + r() * 240, wid = 8 + r() * 34, tail = len * (.2 + r() * .5);
+      c.beginPath(); c.moveTo(cx + Math.cos(a) * len, cy + Math.sin(a) * len);
+      c.lineTo(cx + Math.cos(a + Math.PI / 2) * wid, cy + Math.sin(a + Math.PI / 2) * wid);
+      c.lineTo(cx - Math.cos(a) * tail + Math.cos(a - Math.PI / 2) * wid * .4, cy - Math.sin(a) * tail + Math.sin(a - Math.PI / 2) * wid * .4);
+      c.closePath(); c.globalAlpha = .82; c.fillStyle = pick(r, pal); c.fill(); c.globalAlpha = 1; c.strokeStyle = 'rgba(50,80,10,.35)'; c.lineWidth = 1; c.stroke(); }
+    grain(c, 10, r);
+  },
+  charcoal(c, r) {
+    c.fillStyle = '#1e1d1b'; c.fillRect(0, 0, W, H);
+    for (let i = 0; i < 220; i++) soft(c, r() * W, r() * H, 10 + r() * 70, r() < .5 ? '#000000' : '#45413b', .35);
+    grain(c, 80, r);
+    for (let i = 0; i < 2200; i++) { c.fillStyle = `rgba(125,120,110,${r() * .5})`; c.fillRect(r() * W, r() * H, 1 + r() * 2.5, 1 + r() * 2.5); }
+  },
+  silk(c, r) {
+    grad(c, '#efe8fc', '#c4b2ec'); c.lineCap = 'round';
+    for (let i = 0; i < 34; i++) { const base = i * (H / 30) - 30, ph = r() * 6;
+      c.lineWidth = 14 + r() * 34; c.strokeStyle = r() < .5 ? rgba('#ffffff', .16 + r() * .14) : rgba('#8f74d1', .1 + r() * .1);
+      c.beginPath(); for (let x = -20; x <= W + 20; x += 10) { const y = base + 30 * Math.sin(x * .007 + ph) + 14 * Math.sin(x * .017 + i * .7); x < 0 ? c.moveTo(x, y) : c.lineTo(x, y); } c.stroke(); }
+    grain(c, 3, r);
+  },
+  berries(c, r) {
+    c.fillStyle = '#2a0a1c'; c.fillRect(0, 0, W, H);
+    const pal = ['#8e1b47', '#b0234f', '#6b1a4f', '#d1406a', '#4a1a63', '#7a1030', '#a0306e'];
+    for (let i = 0; i < 115; i++) { const x = r() * W, y = r() * H, R = 14 + r() * 52, g = c.createRadialGradient(x - R * .35, y - R * .35, R * .05, x, y, R);
+      g.addColorStop(0, 'rgba(255,215,228,.9)'); g.addColorStop(.28, pick(r, pal)); g.addColorStop(1, '#25071a');
+      c.fillStyle = g; c.beginPath(); c.arc(x, y, R, 0, TAU); c.fill(); }
+    grain(c, 6, r);
+  },
+  clay(c, r) {
+    grad(c, '#c08a5f', '#8a5634', true);
+    for (let i = 0; i < 70; i++) soft(c, r() * W, r() * H, 60 + r() * 140, r() < .5 ? '#d9a679' : '#6e4127', .18);
+    c.lineCap = 'round'; c.lineJoin = 'round';
+    const q = []; for (let i = 0; i < 50; i++) q.push([r() * W, r() * H, r() * TAU, 10 + Math.floor(r() * 16), 1.5 + r() * 2.8, 0]);
+    while (q.length) { let [x, y, a, n, w, d] = q.shift(); const pts = [[x, y]];
+      for (let k = 0; k < n; k++) { a += (r() - .5) * 1.1; const l = 10 + r() * 24; x += Math.cos(a) * l; y += Math.sin(a) * l; pts.push([x, y]);
+        if (r() < .12 && d < 2) q.push([x, y, a + (r() < .5 ? 1 : -1) * (.6 + r() * .6), Math.floor(n * .5), w * .6, d + 1]); }
+      for (const [off, col, lw] of [[1.6, rgba('#e6b48a', .45), w * .6], [0, rgba('#3d2112', .9), w]]) {
+        c.beginPath(); pts.forEach(([px, py], i) => i ? c.lineTo(px + off, py + off) : c.moveTo(px + off, py + off)); c.strokeStyle = col; c.lineWidth = lw; c.stroke(); } }
+    grain(c, 24, r);
+  },
+  honey(c, r) {
+    const g = c.createRadialGradient(W * .42, H * .38, 0, W * .42, H * .38, W * .95);
+    g.addColorStop(0, '#ffd978'); g.addColorStop(.45, '#f0a92a'); g.addColorStop(1, '#9c5608'); c.fillStyle = g; c.fillRect(0, 0, W, H);
+    soft(c, W * .3, H * .22, 260, '#ffffff', .28);
+    for (let i = 0; i < 8; i++) { const x = 40 + r() * (W - 80), w = 26 + r() * 44, len = 100 + r() * 380;
+      c.fillStyle = rgba('#ffe7a3', .35); c.beginPath(); c.moveTo(x - w / 2, 0); c.lineTo(x - w / 2, len); c.arc(x, len, w / 2, Math.PI, 0, true); c.lineTo(x + w / 2, 0); c.closePath(); c.fill();
+      c.fillStyle = 'rgba(255,255,255,.35)'; c.fillRect(x - w * .28, 0, w * .12, len * .9); }
+    for (let i = 0; i < 45; i++) { const x = r() * W, y = r() * H, R = 2 + r() * 12;
+      c.beginPath(); c.arc(x, y, R, 0, TAU); c.fillStyle = 'rgba(255,255,255,.1)'; c.fill(); c.strokeStyle = 'rgba(255,255,255,.55)'; c.lineWidth = 1.2; c.stroke();
+      c.beginPath(); c.arc(x - R * .35, y - R * .35, R * .25, 0, TAU); c.fillStyle = 'rgba(255,255,255,.8)'; c.fill(); }
+    grain(c, 4, r);
+  },
+  fizz(c, r) {
+    grad(c, '#d3f1ec', '#7fcac1');
+    for (let i = 0; i < 1000; i++) { c.beginPath(); c.arc(r() * W, r() * H, .6 + r() * r() * 4, 0, TAU); c.fillStyle = `rgba(255,255,255,${.35 + r() * .6})`; c.fill(); }
+    c.strokeStyle = 'rgba(255,255,255,.95)';
+    for (let i = 0; i < 70; i++) { const x = r() * W, y = r() * H, s = 5 + r() * 20;
+      c.lineWidth = 1.3; c.beginPath(); c.moveTo(x - s, y); c.lineTo(x + s, y); c.moveTo(x, y - s); c.lineTo(x, y + s); c.stroke();
+      const d = s * .4; c.lineWidth = .8; c.beginPath(); c.moveTo(x - d, y - d); c.lineTo(x + d, y + d); c.moveTo(x + d, y - d); c.lineTo(x - d, y + d); c.stroke(); }
+    grain(c, 4, r);
+  },
+  velvet(c, r) {
+    c.fillStyle = '#55351f'; c.fillRect(0, 0, W, H);
+    [[.25, .3, '#9a6747', .55, 320], [.8, .7, '#8a5a3e', .45, 300], [.7, .15, '#2a170c', .5, 260], [.2, .85, '#2a170c', .55, 300], [.55, .5, '#b07a52', .25, 220]]
+      .forEach(([x, y, h, a, R]) => soft(c, x * W, y * H, R, h, a));
+    for (const col of ['rgba(255,220,190,.07)', 'rgba(20,10,5,.09)']) { c.strokeStyle = col; c.lineWidth = 1; c.beginPath();
+      for (let i = 0; i < 7000; i++) { const x = r() * W, y = r() * H, a = .35 + (r() - .5) * .3, l = 3 + r() * 5; c.moveTo(x, y); c.lineTo(x + Math.cos(a) * l, y + Math.sin(a) * l); } c.stroke(); }
+    grain(c, 6, r);
+  },
+  burst(c, r) {
+    const cx = W * .42, cy = H * .46, g = c.createRadialGradient(cx, cy, 0, cx, cy, W * 1.05);
+    g.addColorStop(0, '#fff2a8'); g.addColorStop(.15, '#ffc21a'); g.addColorStop(.45, '#ff6a13'); g.addColorStop(.75, '#e0157a'); g.addColorStop(1, '#5c0a45');
+    c.fillStyle = g; c.fillRect(0, 0, W, H);
+    const pal = ['#ff2d87', '#ffb000', '#ff5a1f', '#fff1a8', '#b5179e', '#ffd400'];
+    for (let i = 0; i < 130; i++) { const a = r() * TAU, R = 220 + r() * 520, hw = .008 + r() * .035;
+      c.globalAlpha = .35 + r() * .4; c.fillStyle = pick(r, pal); c.beginPath(); c.moveTo(cx, cy);
+      c.lineTo(cx + Math.cos(a - hw) * R, cy + Math.sin(a - hw) * R); c.lineTo(cx + Math.cos(a + hw) * R, cy + Math.sin(a + hw) * R); c.closePath(); c.fill(); }
+    c.globalAlpha = 1; grain(c, 7, r);
+  },
+  petals(c, r) {
+    c.fillStyle = '#fbf1ec'; c.fillRect(0, 0, W, H);
+    const petal = (x, y, R, rot) => { c.save(); c.translate(x, y); c.rotate(rot);
+      const g = c.createLinearGradient(0, 0, 0, -R); g.addColorStop(0, '#f0c4bb'); g.addColorStop(1, '#fffaf7'); c.fillStyle = g;
+      c.shadowColor = 'rgba(170,110,100,.22)'; c.shadowBlur = 22; c.shadowOffsetY = 4;
+      c.beginPath(); c.ellipse(0, -R * .52, R * .27, R * .52, 0, 0, TAU); c.fill(); c.restore(); };
+    for (let i = 0; i < 30; i++) petal(r() * W, r() * H, 40 + r() * 60, r() * TAU);
+    for (let f = 0; f < 5; f++) { const x = r() * W, y = r() * H, R = 110 + r() * 90, n = 6 + Math.floor(r() * 4), rot = r() * TAU;
+      for (let k = 0; k < n; k++) petal(x, y, R, rot + k * TAU / n); soft(c, x, y, R * .16, '#e2a993', .7); }
+    grain(c, 3, r);
+  },
+  rind(c, r) {
+    grad(c, '#f9b233', '#e9800e', true);
+    for (let i = 0; i < 2600; i++) { const x = r() * W, y = r() * H, R = 3 + r() * 7, g = c.createRadialGradient(x, y, 0, x, y, R);
+      g.addColorStop(0, 'rgba(170,70,0,.35)'); g.addColorStop(1, 'rgba(170,70,0,0)'); c.fillStyle = g; c.fillRect(x - R, y - R, R * 2, R * 2);
+      c.fillStyle = 'rgba(255,225,140,.3)'; c.beginPath(); c.arc(x - R * .4, y - R * .4, R * .35, 0, TAU); c.fill(); }
+    soft(c, W * .3, H * .25, 280, '#ffd27a', .3);
+    grain(c, 14, r);
+  },
+  molten(c, r) {
+    c.fillStyle = '#14040a'; c.fillRect(0, 0, W, H); c.lineCap = 'round';
+    const s1 = r() * 10, s2 = r() * 10, pal = ['#7d0f1e', '#a8141f', '#3a0d4a', '#c8381f', '#5a0a2a'];
+    for (let i = 0; i < 90; i++) { flow(c, r, r() * W, r() * H, 70, 7, s1, s2, .0065, .0055); c.strokeStyle = rgba(pick(r, pal), .18 + r() * .3); c.lineWidth = 6 + r() * 36; c.stroke(); }
+    for (let i = 0; i < 22; i++) { flow(c, r, r() * W, r() * H, 60, 7, s1, s2, .0065, .0055); c.strokeStyle = rgba('#ff9a6b', .45); c.lineWidth = 1.2; c.stroke(); }
+    grain(c, 5, r);
+  },
+  ice(c, r) {
+    grad(c, '#f2f9fd', '#bcdcef');
+    const pal = ['#ffffff', '#d6ecf8', '#a9d2ec', '#e9f5fc'];
+    for (let i = 0; i < 70; i++) { const x = r() * W, y = r() * H, n = 3 + Math.floor(r() * 3), R = 40 + r() * 130, a0 = r() * TAU;
+      c.beginPath(); for (let k = 0; k < n; k++) { const a = a0 + k * TAU / n + (r() - .5) * .8, rr = R * (.5 + r() * .6); k ? c.lineTo(x + Math.cos(a) * rr, y + Math.sin(a) * rr) : c.moveTo(x + Math.cos(a) * rr, y + Math.sin(a) * rr); }
+      c.closePath(); c.fillStyle = rgba(pick(r, pal), .25 + r() * .3); c.fill(); c.strokeStyle = 'rgba(255,255,255,.85)'; c.lineWidth = 1.1; c.stroke(); }
+    c.strokeStyle = 'rgba(255,255,255,.7)'; c.lineWidth = .8;
+    for (let i = 0; i < 16; i++) { c.beginPath(); c.moveTo(r() * W, r() * H); c.lineTo(r() * W, r() * H); c.stroke(); }
+    grain(c, 3, r);
+  },
+  marble(c, r) {
+    c.fillStyle = '#ffcd3c'; c.fillRect(0, 0, W, H);
+    for (let i = 0; i < 34; i++) soft(c, r() * W, r() * H, 90 + r() * 200, pick(r, ['#ff7a59', '#ff4f9a', '#ffb000', '#ff9f1c', '#ffe680', '#ff6f91']), .75);
+    grain(c, 4, r);
+  },
+  bark(c, r) {
+    c.fillStyle = '#3a2619'; c.fillRect(0, 0, W, H);
+    const knots = [[r() * W, r() * H, 26 + r() * 20], [r() * W, r() * H, 18 + r() * 16], [r() * W, r() * H, 22 + r() * 18]];
+    for (let x = -30; x < W + 30; x += 4 + r() * 4) { const ph = r() * 6; c.beginPath();
+      for (let y = 0; y <= H; y += 12) { let xx = x + 9 * Math.sin(y * .011 + ph * .3);
+        for (const [kx, ky, kr] of knots) { const dx = xx - kx, dy = y - ky, d = Math.hypot(dx, dy) || 1; if (d < kr * 2.4) xx += dx / d * (kr * 2.4 - d) * .6; }
+        y ? c.lineTo(xx, y) : c.moveTo(xx, y); }
+      c.strokeStyle = r() < .5 ? rgba('#7a5638', .5) : rgba('#1c110a', .6); c.lineWidth = 1 + r() * 3; c.stroke(); }
+    for (const [kx, ky, kr] of knots) for (let k = 1; k <= 6; k++) { c.beginPath(); c.ellipse(kx, ky, kr * k / 5, kr * k / 3, 0, 0, TAU); c.strokeStyle = rgba('#1c110a', .7); c.lineWidth = 1.5; c.stroke(); }
+    for (let i = 0; i < 12; i++) { let x = r() * W, y = -10; c.beginPath(); c.moveTo(x, y);
+      while (y < H + 10) { y += 14 + r() * 20; x += (r() - .5) * 8; c.lineTo(x, y); } c.strokeStyle = rgba('#140b06', .85); c.lineWidth = 3 + r() * 4; c.stroke(); }
+    grain(c, 18, r);
+  }
+};
+
+/* Scores: [sweet, bright, floral, intense, cocoa/body]. Each from the plate's colour, shape and texture cues. */
+const PLATES = [
+  { tex: 'cloud',    v: [1, 0, .3, 0, 0],      cues: 'Pink · round · fluffy' },
+  { tex: 'shards',   v: [0, 1, 0, .2, 0],      cues: 'Lime · angular · sharp' },
+  { tex: 'charcoal', v: [0, 0, 0, .2, 1],      cues: 'Black · rough · grainy' },
+  { tex: 'silk',     v: [.4, 0, 1, 0, 0],      cues: 'Lavender · flowing · smooth' },
+  { tex: 'berries',  v: [.6, .2, 0, .7, 0],    cues: 'Deep red · round · glossy' },
+  { tex: 'clay',     v: [0, .2, 0, 0, .8],     cues: 'Brown · cracked · dry' },
+  { tex: 'honey',    v: [.9, 0, .1, 0, .4],    cues: 'Amber · liquid · smooth' },
+  { tex: 'fizz',     v: [0, .8, .4, 0, 0],     cues: 'Pale teal · sparkling · light' },
+  { tex: 'velvet',   v: [.5, 0, 0, 0, .9],     cues: 'Cocoa · soft · velvet' },
+  { tex: 'burst',    v: [0, .4, 0, 1, 0],      cues: 'Magenta-orange · explosive' },
+  { tex: 'petals',   v: [.3, 0, .9, 0, 0],     cues: 'Blush · round · delicate' },
+  { tex: 'rind',     v: [0, .8, 0, .2, 0],     cues: 'Orange · dimpled · zesty' },
+  { tex: 'molten',   v: [.2, 0, 0, .7, .6],    cues: 'Oxblood · swirling · dense' },
+  { tex: 'ice',      v: [0, .6, .5, 0, 0],     cues: 'Ice blue · faceted · clear' },
+  { tex: 'marble',   v: [.7, 0, 0, .6, 0],     cues: 'Mango-pink · round · ripe' },
+  { tex: 'bark',     v: [0, 0, 0, .1, .8],     cues: 'Dark brown · fibrous · rough' }
+];
+const N = PLATES.length;
+const TOTAL = DIMS.map((_, d) => PLATES.reduce((s, p) => s + p.v[d], 0));
+
+PLATES.forEach((p, i) => { p.canvas = null; p.seed = 1013 + i * 7919; });
+function plateCanvas(p) {
+  if (!p.canvas) { const cv = document.createElement('canvas'); cv.width = W; cv.height = H; TEX[p.tex](cv.getContext('2d'), rng(p.seed)); p.canvas = cv; }
+  return p.canvas;
+}
+function thumb(p, w) { const t = document.createElement('canvas'); t.width = w; t.height = Math.round(w * 4 / 3); t.getContext('2d').drawImage(plateCanvas(p), 0, 0, t.width, t.height); return t; }
+
+/* ---------- hand-drawn tally marks (LRL mark engine) ---------- */
+function tallySVG(count, { total = count, exact = false, seed = 7, h = 22, pitch = 8, gap = 14, x0 = 0, y0 = 0, dim = 'var(--mute)' } = {}) {
+  const r = rng(seed); let out = '', x = x0;
+  const j = v => exact ? 0 : (r() - .5) * v;
+  for (let i = 0; i < total; i++) {
+    const g = i % 5, on = i < count, col = on ? 'currentColor' : dim, op = on ? (exact ? 1 : .78 + r() * .22) : .45;
+    const sw = (exact ? 1.6 : 1.6 + j(.9)).toFixed(2);
+    if (g === 4) {
+      const gx = x - pitch * 4, ya = y0 + h * .78 + j(5), yb = y0 + h * .2 + j(5);
+      out += `<path d="M${(gx - 5 + j(3)).toFixed(1)} ${ya.toFixed(1)} Q ${(gx + pitch * 1.5).toFixed(1)} ${((ya + yb) / 2 + j(4)).toFixed(1)} ${(gx + pitch * 3 + 5 + j(3)).toFixed(1)} ${yb.toFixed(1)}" stroke="${col}" stroke-width="${sw}" stroke-linecap="round" fill="none" opacity="${op.toFixed(2)}"/>`;
+      x += gap - pitch;
+    } else {
+      const xa = x + j(3), xb = x + j(4), ya = y0 + j(5), yb = y0 + h + j(5);
+      out += `<path d="M${xa.toFixed(1)} ${ya.toFixed(1)} Q ${((xa + xb) / 2 + j(3)).toFixed(1)} ${((ya + yb) / 2).toFixed(1)} ${xb.toFixed(1)} ${yb.toFixed(1)}" stroke="${col}" stroke-width="${sw}" stroke-linecap="round" fill="none" opacity="${op.toFixed(2)}"/>`;
+    }
+    x += pitch;
+  }
+  return { svg: out, width: x - x0 };
+}
+
+/* ---------- state ---------- */
+const $ = id => document.getElementById(id);
+let order = [], idx = 0, answers = [], live = new Map(), lastKey = null;
+
+function show(id) { for (const s of ['intro', 'swipe', 'result']) $(s).hidden = s !== id; window.scrollTo(0, 0); }
+
+function shuffle(a) { for (let i = a.length - 1; i > 0; i--) { const k = Math.floor(Math.random() * (i + 1)); [a[i], a[k]] = [a[k], a[i]]; } return a; }
+
+function start() {
+  order = shuffle(PLATES.map((_, i) => i)); idx = 0; answers = [];
+  live.forEach(el => el.remove()); live.clear();
+  show('swipe'); layout(); progress();
+  // demo the gesture once on the first plate: wiggle left ("don't like"), then right ("like")
+  const first = live.get(0);
+  if (first) { first.classList.add('hint'); first.addEventListener('animationend', () => first.classList.remove('hint'), { once: true }); }
+}
+
+function cardEl(i) {
+  if (live.has(i)) return live.get(i);
+  const el = document.createElement('div'); el.className = 'card';
+  el.appendChild(plateCanvas(PLATES[order[i]]));
+  el.insertAdjacentHTML('beforeend', '<span class="stamp yes">LIKE</span><span class="stamp no">DON\'T LIKE</span>');
+  live.set(i, el); $('stack').appendChild(el); bindDrag(el, i);
+  return el;
+}
+
+function layout() {
+  for (let d = 0; d < 3; d++) {
+    const i = idx + d; if (i >= N) break;
+    const el = cardEl(i); el.style.zIndex = 10 - d;
+    el.style.transform = `translateY(${d * 12}px) scale(${1 - d * .05})`;
+    el.style.pointerEvents = d === 0 ? 'auto' : 'none';
+  }
+  if (idx + 3 < N) plateCanvas(PLATES[order[idx + 3]]);
+}
+
+function progress() {
+  const t = tallySVG(idx, { total: N, seed: 42, h: 22, pitch: 9, gap: 16, x0: 6, y0: 2 });
+  const s = $('ticks'); s.setAttribute('viewBox', `0 0 ${t.width + 12} 26`); s.setAttribute('width', t.width + 12); s.innerHTML = t.svg;
+  $('counter').textContent = `Plate ${String(Math.min(idx + 1, N)).padStart(2, '0')} / ${N}`;
+}
+
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+function decide(dir, dy = 0) {
+  if (idx >= N) return;
+  const i = idx, el = live.get(i);
+  answers.push({ plate: order[i], yes: dir > 0 });
+  live.delete(i);
+  if (el) {
+    el.style.pointerEvents = 'none';
+    el.style.transition = reduce ? 'opacity .2s' : 'transform .42s cubic-bezier(.3,.6,.4,1), opacity .42s';
+    if (!reduce) el.style.transform = `translate(${dir * (innerWidth * .9 + 200)}px, ${dy}px) rotate(${dir * 28}deg)`;
+    el.style.opacity = '0';
+    setTimeout(() => el.remove(), 450);
+  }
+  idx++; progress();
+  if (idx >= N) setTimeout(finish, reduce ? 150 : 380); else layout();
+}
+
+function bindDrag(el, i) {
+  let sx = 0, sy = 0, dx = 0, dy = 0, t0 = 0, down = false;
+  const yes = el.querySelector('.yes'), no = el.querySelector('.no');
+  el.addEventListener('pointerdown', e => {
+    if (i !== idx) return; el.classList.remove('hint'); down = true; sx = e.clientX; sy = e.clientY; dx = dy = 0; t0 = performance.now();
+    el.setPointerCapture(e.pointerId); el.style.transition = 'none';
+  });
+  el.addEventListener('pointermove', e => {
+    if (!down) return; dx = e.clientX - sx; dy = e.clientY - sy;
+    el.style.transform = `translate(${dx}px, ${dy * .35}px) rotate(${dx * .06}deg)`;
+    yes.style.opacity = Math.max(0, Math.min(1, dx / 110)); no.style.opacity = Math.max(0, Math.min(1, -dx / 110));
+  });
+  const end = () => {
+    if (!down) return; down = false;
+    const v = Math.abs(dx) / Math.max(1, performance.now() - t0), w = el.offsetWidth;
+    if (Math.abs(dx) > w * .3 || (v > .55 && Math.abs(dx) > 30)) { decide(Math.sign(dx), dy * .35); return; }
+    el.style.transition = ''; yes.style.opacity = no.style.opacity = 0; layout();
+  };
+  el.addEventListener('pointerup', end); el.addEventListener('pointercancel', end);
+}
+
+function flash(dir) { const el = live.get(idx); if (el) el.querySelector(dir > 0 ? '.yes' : '.no').style.opacity = 1; decide(dir); }
+
+/* ---------- scoring ---------- */
+function score() {
+  const u = DIMS.map(() => 0);
+  for (const a of answers) PLATES[a.plate].v.forEach((v, d) => { u[d] += a.yes ? v : -.5 * v; });
+  const un = u.map((x, d) => x / TOTAL[d]);
+  const pos = un.map(x => Math.max(0, x)), pn = Math.hypot(...pos) || 1;
+  let best = null;
+  for (const [k, p] of Object.entries(PROFILES)) {
+    const n = Math.hypot(...p.v), s = un.reduce((acc, x, d) => acc + x * p.v[d], 0) / n;
+    const cos = pos.reduce((acc, x, d) => acc + x * p.v[d], 0) / (pn * n);
+    if (!best || s > best.s) best = { k, s, cos };
+  }
+  return { key: best.k, match: Math.round(Math.max(0, best.cos) * 100), un, pos };
+}
+
+function finish() {
+  const { key, match, pos } = score(); lastKey = key;
+  renderResult(key, match, pos, true);
+  show('result');
+}
+
+function renderResult(key, match, pos, mine) {
+  const p = PROFILES[key];
+  $('profName').textContent = p.name + '.';
+  $('profTag').textContent = p.tag;
+  $('profDesc').textContent = p.desc;
+  $('matchPct').textContent = mine ? `${match}% match` : 'Example result';
+  $('nCount').textContent = mine ? `N = ${answers.length} plates` : '';
+
+  // fingerprint: one row per dimension; the strongest row is drawn machine-exact
+  const max = Math.max(...pos, 1e-6), top = pos.indexOf(Math.max(...pos));
+  const rowH = 40, labelW = 150; let svg = '';
+  pos.forEach((x, d) => {
+    const n = Math.round((x / max) * 10), y = d * rowH;
+    svg += `<text x="0" y="${y + 19}">${DIMS[d].toUpperCase()}</text>`;
+    svg += `<line x1="${labelW - 12}" y1="${y + 30}" x2="400" y2="${y + 30}" stroke="var(--rule)" stroke-width="1"/>`;
+    svg += tallySVG(n, { exact: d === top && n > 0, seed: 100 + d * 13, h: 22, pitch: 9, gap: 18, x0: labelW, y0: y + 3 }).svg;
+  });
+  const fp = $('fingerprint'); fp.setAttribute('viewBox', `0 0 400 ${DIMS.length * rowH}`); fp.innerHTML = svg;
+
+  // why: the two strongest dimensions
+  const rank = pos.map((x, d) => [x, d]).sort((a, b) => b[0] - a[0]).filter(([x]) => x > 0).slice(0, 2);
+  $('why').innerHTML = (rank.length ? rank : [[0, PROFILES[key].v.indexOf(1)]]).map(([, d]) => `<p>${WHY[d]}</p>`).join('');
+
+  // yes-plates
+  const yes = answers.filter(a => a.yes).map(a => PLATES[a.plate]);
+  $('platesWrap').hidden = !yes.length;
+  const box = $('plates'); box.innerHTML = '';
+  yes.slice(0, 8).forEach(pl => { const f = document.createElement('div'); f.className = 'plate'; f.appendChild(thumb(pl, 150)); f.insertAdjacentHTML('beforeend', `<span>${pl.cues}</span>`); box.appendChild(f); });
+
+  $('coffees').innerHTML = COFFEES[key].map(c => `
+    <div class="coffee">
+      <h3>${c.name}</h3>
+      <a href="${HERMANOS}${c.handle}" target="_blank" rel="noopener">Hermanos ↗</a>
+      <span class="notes">${c.notes}</span>
+      ${c.meta ? `<span class="eyebrow">${c.meta}</span>` : ''}
+    </div>`).join('');
+
+  // friend comparison, when they arrived through someone's link
+  $('vs').hidden = !(mine && friendKey);
+  if (mine && friendKey) {
+    $('vsFriend').textContent = PROFILES[friendKey].name; $('vsYou').textContent = p.name;
+    $('vsLine').textContent = friendKey === key ? 'Same palate. You two should split a bag.' : "Different palates. Swap cups at the tasting and see who's right.";
+  }
+
+  const url = shareUrl(), text = shareText();
+  $('socials').innerHTML = url ? [
+    ['WhatsApp', `https://wa.me/?text=${encodeURIComponent(text + ' ' + url)}`],
+    ['X', `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`],
+    ['LinkedIn', `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`],
+    ['Facebook', `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`],
+    ['Telegram', `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`]
+  ].map(([n, href]) => `<a href="${href}" target="_blank" rel="noopener">${n}</a>`).join('') : '';
+  $('copyBtn').hidden = !url;
+
+  $('copied').textContent = ''; $('sharebox').hidden = true; $('storyImg').hidden = true;
+}
+
+/* ---------- sharing ---------- */
+const shareUrl = () => SHARE_URL ? `${SHARE_URL}#${lastKey}` : '';
+const shareText = () => `I'm ${PROFILES[lastKey].name.toUpperCase()} ☕ That's my coffee profile, read from 16 textures I swiped. What's yours?`;
+const challengeText = () => `I got ${PROFILES[lastKey].name.toUpperCase()}. Bet you can't guess yours. Swipe 16 textures and find your coffee profile:`;
+
+function copyText(t, ok) {
+  const fallback = () => { const b = $('sharebox'); b.value = t; b.hidden = false; b.focus(); b.select(); $('copied').textContent = 'Select the text below and copy it'; };
+  try { navigator.clipboard.writeText(t).then(() => { $('copied').textContent = ok; $('sharebox').hidden = true; }, fallback); } catch (_) { fallback(); }
+}
+
+function spaced(c, text, x, y, sp, align = 'left') {
+  const w = [...text].reduce((s, ch) => s + c.measureText(ch).width + sp, -sp);
+  let cx = align === 'right' ? x - w : x;
+  for (const ch of text) { c.fillText(ch, cx, y); cx += c.measureText(ch).width + sp; }
+}
+
+// 1080×1920 story in the LRL layout: rail, plate collage, display name, pick, call to action
+async function storyBlob(key) {
+  const p = PROFILES[key], INK = '#2B2A26', MUTE = '#8A8880', L = 90, R = 990;
+  try { await Promise.all(['700 132px Outfit', '400 26px "Geist Mono"', 'italic 56px "Instrument Serif"'].map(f => document.fonts.load(f))); } catch (_) {}
+  const S = document.createElement('canvas'); S.width = 1080; S.height = 1920; const c = S.getContext('2d');
+  c.fillStyle = '#F7F8F3'; c.fillRect(0, 0, 1080, 1920);
+  const rule = y => { c.fillStyle = 'rgba(43,42,38,.22)'; c.fillRect(L, y, R - L, 2); };
+
+  c.fillStyle = INK; c.font = '700 30px Outfit'; spaced(c, 'LIVING ROOM LABS', L, 196, 7);
+  rule(236);
+  c.fillStyle = MUTE; c.font = '400 26px "Geist Mono", monospace';
+  spaced(c, 'MY COFFEE PROFILE', L, 300, 4); spaced(c, 'READ FROM 16 TEXTURES', R, 300, 4, 'right');
+
+  const dot = v => v.reduce((s, x, d) => s + x * p.v[d], 0);
+  const yes = answers.filter(a => a.yes).map(a => a.plate).sort((a, b) => dot(PLATES[b].v) - dot(PLATES[a].v));
+  const best = PLATES.map((_, i) => i).sort((a, b) => dot(PLATES[b].v) - dot(PLATES[a].v));
+  const chosen = [...new Set([...yes, ...best])].slice(0, 6);
+  const cw = 288, ch = 384, gap = 18;
+  chosen.forEach((pi, k) => {
+    const x = L + (k % 3) * (cw + gap), y = 344 + Math.floor(k / 3) * (ch + gap);
+    c.save(); c.beginPath(); c.roundRect ? c.roundRect(x, y, cw, ch, 16) : c.rect(x, y, cw, ch); c.clip();
+    c.drawImage(plateCanvas(PLATES[pi]), x, y, cw, ch); c.restore();
+  });
+  rule(1166);
+
+  const name = p.name.toUpperCase() + '.', parts = name.includes(' & ') ? [name.split(' & ')[0] + ' &', name.split(' & ')[1]] : [name];
+  let size = 140; c.font = `700 ${size}px Outfit`;
+  while (Math.max(...parts.map(t => c.measureText(t).width)) > R - L && size > 60) { size -= 4; c.font = `700 ${size}px Outfit`; }
+  c.fillStyle = INK; parts.forEach((t, i) => c.fillText(t, L - 4, 1166 + 40 + size * .86 + i * size * .94));
+  const after = 1166 + 40 + size * .86 + (parts.length - 1) * size * .94;
+  c.font = 'italic 56px "Instrument Serif", Georgia, serif'; c.fillText(p.tag, L, after + 92);
+  c.fillStyle = MUTE; c.font = '400 26px "Geist Mono", monospace';
+  spaced(c, `TRY · ${COFFEES[key][0].name.toUpperCase()} · HERMANOS`, L, after + 160, 4);
+
+  rule(1606);
+  c.fillStyle = INK; c.font = '700 54px Outfit'; c.fillText("WHAT'S YOURS? →", L, 1686);
+  c.fillStyle = MUTE; c.font = '400 24px "Geist Mono", monospace'; spaced(c, 'LIVING ROOM LABS · COFFEE TASTING · NOVEMBER', L, 1734, 3);
+
+  const d = c.getImageData(0, 0, 1080, 1920), px = d.data, r = rng(5);
+  for (let i = 0; i < px.length; i += 4) { const n = (r() - .5) * 12; px[i] += n; px[i + 1] += n; px[i + 2] += n; }
+  c.putImageData(d, 0, 0);
+  return new Promise(res => S.toBlob(res, 'image/png'));
+}
+
+/* ---------- wiring ---------- */
+$('start').addEventListener('click', start);
+$('again').addEventListener('click', start);
+$('yesBtn').addEventListener('click', () => flash(1));
+$('noBtn').addEventListener('click', () => flash(-1));
+addEventListener('keydown', e => {
+  if ($('swipe').hidden || !$('science').hidden) return;
+  if (e.key === 'ArrowRight') { e.preventDefault(); flash(1); }
+  if (e.key === 'ArrowLeft') { e.preventDefault(); flash(-1); }
+});
+$('openScience').addEventListener('click', () => { $('science').hidden = false; $('science').scrollTop = 0; $('closeScience').focus(); });
+$('closeScience').addEventListener('click', () => { $('science').hidden = true; $('openScience').focus(); });
+addEventListener('keydown', e => { if (e.key === 'Escape' && !$('science').hidden) $('closeScience').click(); });
+$('copyBtn').addEventListener('click', () => copyText(shareUrl(), 'Link copied.'));
+$('jumpShare').addEventListener('click', () => $('share').scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' }));
+$('challengeBtn').addEventListener('click', async () => {
+  const text = challengeText(), url = shareUrl();
+  if (navigator.share) {
+    try { await navigator.share({ title: 'Find your coffee profile', text, url }); return; }
+    catch (e) { if (e && e.name === 'AbortError') return; }
+  }
+  copyText(url ? `${text} ${url}` : text, 'Invite copied. Paste it to a friend.');
+});
+$('storyBtn').addEventListener('click', async () => {
+  const btn = $('storyBtn'), msg = $('copied'); btn.disabled = true; msg.textContent = 'Drawing your story…';
+  try {
+    const blob = await storyBlob(lastKey), img = $('storyImg');
+    img.src = URL.createObjectURL(blob); img.hidden = false;
+    const hold = 'Press and hold (or right-click) the image to save it.';
+    if (!window.claude) {   // hosted outside claude.ai: a plain download works
+      const a = document.createElement('a'); a.href = img.src; a.download = 'my-coffee-profile.png'; a.click();
+      msg.textContent = 'Saved. Post it to your story.'; return;
+    }
+    const dl = await window.claude.use('downloads');
+    if (!dl) { msg.textContent = hold; return; }
+    try { await dl.save({ filename: 'my-coffee-profile.png', data: blob }); msg.textContent = 'Saved. Post it to your story.'; }
+    catch (e) { msg.textContent = e && e.code === 'rate_limited' ? 'One moment, then try again.' : hold; }
+  } finally { btn.disabled = false; }
+});
+if (EVENT_URL) { $('eventLink').href = EVENT_URL; $('eventLink').hidden = false; $('eventSoon').hidden = true; }
+
+// intro fan: three plates that show the range (sweet, intense, bright)
+[0, 9, 1].forEach(i => $('fan').appendChild(thumb(PLATES[i], 276)));
+
+// shared link: #floral / #bright / #tropical / #cocoa
+const h = location.hash.slice(1), friendKey = PROFILES[h] ? h : null;
+if (friendKey) { $('teaser').hidden = false; $('teaserName').textContent = PROFILES[h].name; }
+
+// warm the remaining plates in idle time so the first swipes never stall
+(function warm(i = 0) { if (i >= N) return; plateCanvas(PLATES[i]); (window.requestIdleCallback || (f => setTimeout(f, 30)))(() => warm(i + 1)); })();
+
+// ?og renders the 1200×630 link-preview image (screenshot it to og-image.png)
+if (new URLSearchParams(location.search).has('og')) (async () => {
+  try { await Promise.all(['700 76px Outfit', '400 18px "Geist Mono"', 'italic 34px "Instrument Serif"'].map(f => document.fonts.load(f))); } catch (_) {}
+  const S = document.createElement('canvas'); S.width = 1200; S.height = 630; const c = S.getContext('2d');
+  c.fillStyle = '#F7F8F3'; c.fillRect(0, 0, 1200, 630);
+  c.fillStyle = '#2B2A26'; c.font = '700 22px Outfit'; spaced(c, 'LIVING ROOM LABS', 72, 88, 5);
+  c.fillStyle = 'rgba(43,42,38,.22)'; c.fillRect(72, 116, 1056, 2);
+  c.fillStyle = '#2B2A26'; c.font = '700 76px Outfit';
+  ['SWIPE TO FIND', 'YOUR COFFEE', 'PROFILE.'].forEach((t, i) => c.fillText(t, 68, 230 + i * 74));
+  c.font = 'italic 34px "Instrument Serif", Georgia, serif'; c.fillText('Your eyes already have opinions about flavour.', 72, 452);
+  c.fillStyle = '#8A8880'; c.font = '400 18px "Geist Mono", monospace'; spaced(c, 'A CROSSMODAL TASTE TEST · 16 PLATES · 60 SECONDS', 72, 548, 3);
+  [[0, -9, -150], [1, 9, 150], [9, 0, 0]].forEach(([pi, deg, dx]) => {
+    c.save(); c.translate(930 + dx, 360 + (deg ? 18 : 0)); c.rotate(deg * Math.PI / 180);
+    c.shadowColor = 'rgba(43,42,38,.22)'; c.shadowBlur = 30; c.shadowOffsetY = 12;
+    c.beginPath(); c.roundRect ? c.roundRect(-105, -140, 210, 280, 12) : c.rect(-105, -140, 210, 280); c.fillStyle = '#ccc'; c.fill();
+    c.shadowColor = 'transparent'; c.clip(); c.drawImage(plateCanvas(PLATES[pi]), -105, -140, 210, 280); c.restore();
+  });
+  document.body.innerHTML = ''; document.body.style.background = '#F7F8F3'; S.style.display = 'block'; document.body.appendChild(S);
+})();
+</script>
+</body>
+</html>
