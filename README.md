@@ -12,7 +12,7 @@ Each plate combines colour, shape and texture cues that published research links
 
 Everything lives in `index.html`. The block marked `EDIT HERE` near the top of the script holds:
 
-- `EVENT_URL`: the sign-up link for the tasting. While it is empty, the page shows "Details coming soon".
+- `EVENT_URL`: the Luma waitlist for the tasting. The same link is also written into the two "Join the waitlist" buttons in the HTML, so change it in all three places.
 - `COFFEES`: the two coffee picks per profile.
 
 Commit to `main` and GitHub Pages redeploys in about a minute.
